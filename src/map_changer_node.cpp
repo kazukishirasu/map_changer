@@ -22,7 +22,13 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
     if (config_list.size() - 1 >= index)
     {
         std::string id = config_list[index][0];
-        if (msg->identity == id && msg->identity != old_id)
+        // if (msg->identity == id && msg->identity != old_id)
+        // {
+        //     send_map(index);
+        //     send_pose(msg->pose);
+        //     index++;
+        // }
+        if (msg->identity != id && id == old_id)
         {
             send_map(index);
             send_pose(msg->pose);
@@ -34,7 +40,7 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
 
 void map_changer_node::read_yaml()
 {
-    pnh_.param("file_path", file_path_, std::string(ros::package::getPath("map_changer") += "/config/test.yaml"));
+    pnh_.param("file_path", file_path_, std::string(ros::package::getPath("map_changer") += "/config/test1.yaml"));
     ROS_INFO("Load %s", file_path_.c_str());
     YAML::Node config = YAML::LoadFile(file_path_);
     for (const auto& node:config["config"])
