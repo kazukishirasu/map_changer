@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>map_changer</name>
+  <version>0.0.0</version>
+  <description>The map_changer package</description>
+
+  <maintainer email="kazuki@todo.todo">kazuki</maintainer>
+
+  <license>TODO</license>
+
+  <depend>roscpp</depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

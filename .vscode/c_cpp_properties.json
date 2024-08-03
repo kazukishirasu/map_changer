@@ -1,0 +1,31 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/kazuki/tsukuba_ws/devel/include/**",
+        "/home/kazuki/tokuron_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/kazuki/tsukuba_ws/src/emcl2/include/**",
+        "/home/kazuki/tsukuba_ws/src/pointcloud_to_laserscan/include/**",
+        "/home/kazuki/tsukuba_ws/src/robot_localization/include/**",
+        "/home/kazuki/tsukuba_ws/src/waypoint_manager/rviz_plugin_goalradius/include/**",
+        "/home/kazuki/tsukuba_ws/src/tp_robot/include/**",
+        "/home/kazuki/tsukuba_ws/src/turtlebot3_simulations/turtlebot3_fake/include/**",
+        "/home/kazuki/tsukuba_ws/src/turtlebot3_simulations/turtlebot3_gazebo/include/**",
+        "/home/kazuki/tsukuba_ws/src/turtlebot3/turtlebot3_slam/include/**",
+        "/home/kazuki/tsukuba_ws/src/waypoint_manager/waypoint_server/include/**",
+        "/home/kazuki/tsukuba_ws/src/map_changer/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
