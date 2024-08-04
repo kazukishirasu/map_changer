@@ -35,6 +35,9 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
             send_pose(msg->pose);
             index++;
         }
+    } else if (config_list.size() - 1 < index)
+    {
+        index = 0;
     }
     old_id = msg->identity;
 }
