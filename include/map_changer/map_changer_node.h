@@ -8,6 +8,7 @@
 #include <yaml-cpp/yaml.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <tf/transform_broadcaster.h>
 #include <waypoint_manager_msgs/Waypoint.h>
 #include <nav_msgs/LoadMap.h>
 
