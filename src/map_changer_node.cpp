@@ -9,7 +9,6 @@ map_changer_node::map_changer_node() : pnh_("~")
     wp_sub_ = nh_.subscribe("/waypoint_manager/waypoint", 1, &map_changer_node::cb_wp, this);
     map_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map");
     costmap_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map_for_costmap");
-    pose_pub_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>("/initialpose", 1, this);
 }
 
 map_changer_node::~map_changer_node()
@@ -31,8 +30,8 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
         // }
         if (msg->identity != id && id == old_id)
         {
-            send_map(index);
             send_pose(msg->pose);
+            send_map(index);
             index++;
         }
     } else if (config_list.size() - 1 < index)
@@ -77,10 +76,9 @@ void map_changer_node::send_map(int index)
 
 void map_changer_node::send_pose(geometry_msgs::Pose pose)
 {
-    geometry_msgs::PoseWithCovarianceStamped msg;
-    msg.pose.pose = pose;
-    pose_pub_.publish(msg);
-    ROS_INFO("Teleport to x:%lf, y:%lf", msg.pose.pose.position.x, msg.pose.pose.position.y);
+    nh_.setParam("/emcl2_node/initial_pose_x", pose.position.x);
+    nh_.setParam("/emcl2_node/initial_pose_y", pose.position.y);
+    ROS_INFO("Teleport to x:%lf, y:%lf", pose.position.x, pose.position.y);
 }
 }
 
