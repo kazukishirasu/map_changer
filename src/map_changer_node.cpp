@@ -22,18 +22,18 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
     if (config_list.size() - 1 >= index)
     {
         std::string id = config_list[index][0];
-        // if (msg->identity == id && msg->identity != old_id)
-        // {
-        //     send_map(index);
-        //     send_pose(msg->pose);
-        //     index++;
-        // }
-        if (msg->identity != id && id == old_id)
+        if (msg->identity == id && msg->identity != old_id)
         {
             send_map(index);
             send_pose(msg->pose);
             index++;
         }
+        // if (msg->identity != id && id == old_id)
+        // {
+        //     send_map(index);
+        //     send_pose(msg->pose);
+        //     index++;
+        // }
     }
     old_id = msg->identity;
 }
