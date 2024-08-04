@@ -27,6 +27,7 @@ private:
     ros::NodeHandle pnh_;
     ros::Subscriber wp_sub_;
     ros::ServiceClient map_srv_;
+    ros::ServiceClient costmap_srv_;
     ros::Publisher pose_pub_;
     std::string file_path_;
     std::vector<std::array<std::string, 2>> config_list;

@@ -8,6 +8,7 @@ map_changer_node::map_changer_node() : pnh_("~")
     read_yaml();
     wp_sub_ = nh_.subscribe("/waypoint_manager/waypoint", 1, &map_changer_node::cb_wp, this);
     map_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map");
+    costmap_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map_for_costmap");
     pose_pub_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>("/initialpose", 1, this);
 }
 
@@ -22,18 +23,18 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
     if (config_list.size() - 1 >= index)
     {
         std::string id = config_list[index][0];
-        if (msg->identity == id && msg->identity != old_id)
-        {
-            send_map(index);
-            send_pose(msg->pose);
-            index++;
-        }
-        // if (msg->identity != id && id == old_id)
+        // if (msg->identity == id && msg->identity != old_id)
         // {
         //     send_map(index);
         //     send_pose(msg->pose);
         //     index++;
         // }
+        if (msg->identity != id && id == old_id)
+        {
+            send_map(index);
+            send_pose(msg->pose);
+            index++;
+        }
     }
     old_id = msg->identity;
 }
@@ -54,13 +55,20 @@ void map_changer_node::read_yaml()
 
 void map_changer_node::send_map(int index)
 {
-    nav_msgs::LoadMap srv;
-    srv.request.map_url = config_list[index][1];
-    if (map_srv_.call(srv))
+    nav_msgs::LoadMap map, costmap;
+    map.request.map_url = config_list[index][1] + ".yaml";
+    costmap.request.map_url = config_list[index][1] + "_for_costmap.yaml";
+    if (map_srv_.call(map))
     {
-        ROS_INFO("Map change to %s", srv.request.map_url.c_str());
+        ROS_INFO("Map change to %s", map.request.map_url.c_str());
     } else {
         ROS_ERROR("Failed to call service /change_map");
+    }
+    if (costmap_srv_.call(costmap))
+    {
+        ROS_INFO("Costmap change to %s", costmap.request.map_url.c_str());
+    } else {
+        ROS_ERROR("Failed to call service /change_map_for_costmap");
     }
 }
 

@@ -1,5 +1,5 @@
 config:
+  # - waypoint_id: registed_0_1299399000000
+  #   map_file: /home/kazuki/tsukuba_ws/src/orne-box/orne_box_navigation_executor/maps/mymap2
   - waypoint_id: registed_0_1252124000000
-    map_file: /home/kazuki/tsukuba_ws/src/real_tsudanuma2-3_sim/maps/map2.yaml
-  - waypoint_id: registed_0_1313938000000
-    map_file: /home/kazuki/tsukuba_ws/src/real_tsudanuma2-3_sim/maps/map1.yaml
+    map_file: /home/kazuki/tsukuba_ws/src/orne-box/orne_box_navigation_executor/maps/mymap2
