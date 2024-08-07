@@ -1,0 +1,194 @@
+waypoint_server:
+  scale: 1
+  position:
+    x: 1
+    y: 2
+    z: 3
+  euler_angles:
+    x: 0
+    y: 0
+    z: 1.57
+  waypoints:
+    - id: registed_0_341420000000
+      position:
+        x: -1.456939
+        y: 0.8435917
+        z: -3
+      euler_angles:
+        x: 0
+        y: 0
+        z: -1.57
+      properties:
+        - key: goal_radius
+          value: 0.75
+        - key: stop
+          value: false
+    - id: registed_0_1258678000000
+      position:
+        x: -2.785663
+        y: -5.030415
+        z: -3
+      euler_angles:
+        x: 0
+        y: 0
+        z: -1.598296
+      properties:
+        - key: goal_radius
+          value: 0.75
+        - key: stop
+          value: false
+        - key: standby_mode
+          value: ""
+        - key: white
+          value: ""
+        - key: traffic_sign_ON
+          value: ""
+        - key: switch_segmentation_OFF
+          value: ""
+        - key: traffic_sign_OFF
+          value: ""
+        - key: switch_segmentation_ON
+          value: ""
+    - id: registed_0_1299399000000
+      position:
+        x: -1.453126
+        y: 0.8413184
+        z: -3
+      euler_angles:
+        x: 0
+        y: 0
+        z: -1.57372
+      properties:
+        - key: goal_radius
+          value: 0.75
+        - key: stop
+          value: true
+        - key: standby_mode
+          value: ""
+        - key: white
+          value: ""
+        - key: traffic_sign_ON
+          value: ""
+        - key: switch_segmentation_OFF
+          value: ""
+        - key: traffic_sign_OFF
+          value: ""
+        - key: switch_segmentation_ON
+          value: ""
+    - id: registed_0_82972000000
+      position:
+        x: -0.7578056
+        y: -4.013258
+        z: -3
+      euler_angles:
+        x: 0
+        y: 0
+        z: -1.57
+      properties:
+        - key: goal_radius
+          value: 0.75
+        - key: stop
+          value: true
+    - id: ""
+      position:
+        x: 4.00609
+        y: -6.991577
+        z: -3
+      euler_angles:
+        x: 0
+        y: 0
+        z: -1.57
+    - id: registed_0_1252124000000
+      position:
+        x: -0.9249514
+        y: -2.360307
+        z: -3
+      euler_angles:
+        x: 3.141592
+        y: -3.141592
+        z: -1.58585
+      properties:
+        - key: goal_radius
+          value: 0.75
+        - key: stop
+          value: true
+        - key: standby_mode
+          value: ""
+        - key: white
+          value: ""
+        - key: traffic_sign_ON
+          value: ""
+        - key: switch_segmentation_OFF
+          value: ""
+        - key: traffic_sign_OFF
+          value: ""
+        - key: switch_segmentation_ON
+          value: ""
+    - id: registed_0_1595859000000
+      position:
+        x: -0.6696529
+        y: 15.34661
+        z: -3
+      euler_angles:
+        x: 0
+        y: 0
+        z: -1.57
+      properties:
+        - key: switch_segmentation_ON
+          value: ""
+        - key: traffic_sign_OFF
+          value: ""
+        - key: switch_segmentation_OFF
+          value: ""
+        - key: traffic_sign_ON
+          value: ""
+        - key: white
+          value: ""
+        - key: standby_mode
+          value: ""
+        - key: stop
+          value: ""
+        - key: goal_radius
+          value: 0.75
+    - id: registed_0_1609011000000
+      position:
+        x: -0.1778002
+        y: 9.56587
+        z: -3
+      euler_angles:
+        x: 3.882491e-09
+        y: 5.261388e-10
+        z: -3.126003
+      properties:
+        - key: goal_radius
+          value: 0.75
+        - key: stop
+          value: false
+    - id: registed_0_57914000000
+      position:
+        x: -0.3556747
+        y: 12.68732
+        z: -3
+      euler_angles:
+        x: -0
+        y: 0
+        z: 1.571592
+      properties:
+        - key: stop
+          value: true
+        - key: goal_radius
+          value: 0.75
+    - id: registed_0_96091000000
+      position:
+        x: -0.687252
+        y: 15.35324
+        z: -3
+      euler_angles:
+        x: 0
+        y: 0
+        z: -1.57
+      properties:
+        - key: stop
+          value: true
+        - key: goal_radius
+          value: 0.75

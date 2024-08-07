@@ -1,0 +1,5 @@
+config:
+  - waypoint_id: registed_0_1299399000000
+    map_file: /home/kazuki/tsukuba_ws/src/navigation/map/tsudanuma2-18
+  - waypoint_id: registed_0_96091000000
+    map_file: /home/kazuki/tsukuba_ws/src/navigation/map/tsudanuma2-3
