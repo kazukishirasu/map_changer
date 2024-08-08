@@ -38,8 +38,9 @@ private:
     ros::ServiceClient costmap_srv_;
     ros::Publisher pose_pub_;
     std::string file_path_;
-    std::vector<std::array<std::string, 2>> config_list;
-    bool reach_flag = false;
+    std::vector<std::array<std::string, 2>> config_list_;
+    bool reach_flag_ = false;
+    double wait_time_;
 };
 
 }
