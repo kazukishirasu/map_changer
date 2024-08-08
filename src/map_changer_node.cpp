@@ -5,6 +5,7 @@ namespace map_changer {
 map_changer_node::map_changer_node() : pnh_("~")
 {
     ROS_INFO("Start map_changer_node");
+    pnh_.param("wait_time", wait_time_, 5.0);
     read_yaml();
     wp_sub_ = nh_.subscribe("/waypoint_manager/waypoint", 1, &map_changer_node::cb_wp, this);
     reach_sub_ = nh_.subscribe("/waypoint_manager/waypoint/is_reached", 1, &map_changer_node::cb_reach, this);
@@ -23,13 +24,13 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
     static int index = 0;
     static std::string old_id;
     static bool tp_flag = false;
-    ros::Rate rate(0.2);
-    if (config_list.size() - 1 >= index)
+    if (config_list_.size() - 1 >= index)
     {
-        std::string id = config_list[index][0];
-        if (msg->identity == id && reach_flag && !tp_flag && msg->identity == old_id)
+        std::string id = config_list_[index][0];
+        if (msg->identity == id && reach_flag_ && !tp_flag && old_id == msg->identity)
         {
-            rate.sleep();
+            ROS_INFO("Waiting for %.1f seconds", wait_time_);
+            ros::Duration(wait_time_).sleep();
             call_next_wp();
             tp_flag = true;
         }else if (tp_flag)
@@ -40,16 +41,17 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
             tp_flag = false;
             index++;
         }
-    }else if (config_list.size() - 1 < index)
+    }else if (config_list_.size() - 1 < index)
     {
         index = 0;
     }
     old_id = msg->identity;
+    reach_flag_ = false;
 }
 
 void map_changer_node::cb_reach(std_msgs::Bool msg)
 {
-    reach_flag = msg.data;
+    reach_flag_ = msg.data;
 }
 
 void map_changer_node::read_yaml()
@@ -64,7 +66,7 @@ void map_changer_node::read_yaml()
             std::array<std::string, 2> tmp;
             tmp[0] = node["waypoint_id"].as<std::string>();
             tmp[1] = node["map_file"].as<std::string>();
-            config_list.push_back(tmp);
+            config_list_.push_back(tmp);
         }   
     }
     catch(const std::exception& e)
@@ -76,8 +78,8 @@ void map_changer_node::read_yaml()
 void map_changer_node::send_map(int index)
 {
     nav_msgs::LoadMap map, costmap;
-    map.request.map_url = config_list[index][1] + ".yaml";
-    costmap.request.map_url = config_list[index][1] + "_for_costmap.yaml";
+    map.request.map_url = config_list_[index][1] + ".yaml";
+    costmap.request.map_url = config_list_[index][1] + "_for_costmap.yaml";
     try
     {
         map_srv_.call(map);
@@ -91,10 +93,10 @@ void map_changer_node::send_map(int index)
     {
         ROS_ERROR("%s", e.what());
     }
-    
+
     try
     {
-        map_srv_.call(costmap);
+        costmap_srv_.call(costmap);
         ROS_INFO("Costmap change to %s", costmap.request.map_url.c_str());
     }
     catch(const ros::Exception& e)
