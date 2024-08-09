@@ -5,10 +5,10 @@ namespace map_changer {
 map_changer_node::map_changer_node() : pnh_("~")
 {
     ROS_INFO("Start map_changer_node");
-    pnh_.param("wait_time", wait_time_, 5.0);
+    pnh_.param("wait_time", wait_time_, 1.0);
     read_yaml();
     wp_sub_ = nh_.subscribe("/waypoint_manager/waypoint", 1, &map_changer_node::cb_wp, this);
-    reach_sub_ = nh_.subscribe("/waypoint_manager/waypoint/is_reached", 1, &map_changer_node::cb_reach, this);
+    result_sub_ = nh_.subscribe("/move_base/result", 1, &map_changer_node::cb_result, this);
     next_wp_srv_ = nh_.serviceClient<std_srvs::Trigger>("/waypoint_manager/waypoint_server/next_waypoint");
     map_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map");
     costmap_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map_for_costmap");
@@ -24,10 +24,11 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
     static int index = 0;
     static std::string old_id;
     static bool tp_flag = false;
-    if (config_list_.size() - 1 >= index)
+    try
     {
         std::string id = config_list_[index][0];
-        if (msg->identity == id && reach_flag_ && !tp_flag && old_id == msg->identity)
+        ROS_WARN("msg->identity:%s, old_id:%s, id:%s, reach_flag:%d, tp_flag:%d", msg->identity.c_str(), old_id.c_str(), id.c_str(), reach_flag_, tp_flag);
+        if (msg->identity == id && msg->identity == old_id && reach_flag_ && !tp_flag)
         {
             ROS_INFO("Waiting for %.1f seconds", wait_time_);
             ros::Duration(wait_time_).sleep();
@@ -41,17 +42,42 @@ void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &ms
             tp_flag = false;
             index++;
         }
-    }else if (config_list_.size() - 1 < index)
+    }
+    catch(...)
     {
         index = 0;
     }
     old_id = msg->identity;
-    reach_flag_ = false;
 }
 
-void map_changer_node::cb_reach(std_msgs::Bool msg)
+void map_changer_node::cb_result(const move_base_msgs::MoveBaseActionResult::ConstPtr &msg)
 {
-    reach_flag_ = msg.data;
+    if (msg->status.status == 3)
+    {
+        reach_flag_ = true;
+    }else
+    {
+        reach_flag_ = false;
+    }
+    ROS_WARN("reach_flag:%d", reach_flag_);
+}
+
+void map_changer_node::call_next_wp()
+{
+    std_srvs::Trigger srv;
+    try
+    {
+        next_wp_srv_.call(srv);
+        ROS_INFO("Call service : /next_waypoint");
+    }
+    catch(const ros::Exception& e)
+    {
+        ROS_ERROR("%s", e.what());
+    }
+    catch(const std::exception& e)
+    {
+        ROS_ERROR("%s", e.what());
+    }
 }
 
 void map_changer_node::read_yaml()
@@ -126,24 +152,6 @@ void map_changer_node::send_initialpose(geometry_msgs::Pose pose)
     msg.pose.pose = pose;
     pose_pub_.publish(msg);
     ROS_INFO("Teleport to x:%lf, y:%lf", pose.position.x, pose.position.y);
-}
-
-void map_changer_node::call_next_wp()
-{
-    std_srvs::Trigger srv;
-    try
-    {
-        next_wp_srv_.call(srv);
-        ROS_INFO("Call service : /next_waypoint");
-    }
-    catch(const ros::Exception& e)
-    {
-        ROS_ERROR("%s", e.what());
-    }
-    catch(const std::exception& e)
-    {
-        ROS_ERROR("%s", e.what());
-    }
 }
 }
 

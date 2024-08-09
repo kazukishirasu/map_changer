@@ -6,7 +6,10 @@ find_package(catkin REQUIRED COMPONENTS
     roslib
     geometry_msgs
     waypoint_manager_msgs
+    move_base_msgs
+    std_srvs
     nav_msgs
+    tf
 )
 
 catkin_package(
