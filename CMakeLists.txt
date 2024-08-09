@@ -4,11 +4,11 @@ project(map_changer)
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     roslib
-    geometry_msgs
-    waypoint_manager_msgs
     move_base_msgs
+    waypoint_manager_msgs
     std_srvs
     nav_msgs
+    geometry_msgs
     tf
 )
 

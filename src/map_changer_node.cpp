@@ -7,8 +7,8 @@ map_changer_node::map_changer_node() : pnh_("~")
     ROS_INFO("Start map_changer_node");
     pnh_.param("wait_time", wait_time_, 1.0);
     read_yaml();
-    wp_sub_ = nh_.subscribe("/waypoint_manager/waypoint", 1, &map_changer_node::cb_wp, this);
     result_sub_ = nh_.subscribe("/move_base/result", 1, &map_changer_node::cb_result, this);
+    wp_sub_ = nh_.subscribe("/waypoint_manager/waypoint", 1, &map_changer_node::cb_wp, this);
     next_wp_srv_ = nh_.serviceClient<std_srvs::Trigger>("/waypoint_manager/waypoint_server/next_waypoint");
     map_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map");
     costmap_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map_for_costmap");
@@ -19,47 +19,47 @@ map_changer_node::~map_changer_node()
 {
 }
 
-void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &msg)
+void map_changer_node::cb_result(const move_base_msgs::MoveBaseActionResult::ConstPtr &msg)
 {
+    // check availability
+    if (!wp)
+    {
+        return;
+    }
     static int index = 0;
     static std::string old_id;
     static bool tp_flag = false;
-    try
-    {
-        std::string id = config_list_[index][0];
-        ROS_WARN("msg->identity:%s, old_id:%s, id:%s, reach_flag:%d, tp_flag:%d", msg->identity.c_str(), old_id.c_str(), id.c_str(), reach_flag_, tp_flag);
-        if (msg->identity == id && msg->identity == old_id && reach_flag_ && !tp_flag)
-        {
-            ROS_INFO("Waiting for %.1f seconds", wait_time_);
-            ros::Duration(wait_time_).sleep();
-            call_next_wp();
-            tp_flag = true;
-        }else if (tp_flag)
-        {
-            send_emclpose(msg->pose);
-            send_map(index);
-            send_initialpose(msg->pose);
-            tp_flag = false;
-            index++;
-        }
-    }
-    catch(...)
-    {
-        index = 0;
-    }
-    old_id = msg->identity;
-}
-
-void map_changer_node::cb_result(const move_base_msgs::MoveBaseActionResult::ConstPtr &msg)
-{
+    // status:3 -> reach goal
     if (msg->status.status == 3)
     {
-        reach_flag_ = true;
-    }else
+        try
+        {
+            std::string id = config_list_[index][0];
+            if (wp->identity == id && wp->identity == old_id)
+            {
+                ros::Duration(wait_time_).sleep();
+                call_next_wp();
+                tp_flag = true;
+            }
+        }
+        catch(const std::exception& e)
+        {
+            index = 0;
+        }
+    }else if (tp_flag)
     {
-        reach_flag_ = false;
+        send_emclpose(wp->pose);
+        send_map(index);
+        send_initialpose(wp->pose);
+        tp_flag = false;
+        index++;
     }
-    ROS_WARN("reach_flag:%d", reach_flag_);
+    old_id = wp->identity;
+}
+
+void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &msg)
+{
+    wp = msg;
 }
 
 void map_changer_node::call_next_wp()

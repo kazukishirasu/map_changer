@@ -9,6 +9,13 @@
   <license>TODO</license>
 
   <depend>roscpp</depend>
+  <depend>roslib</depend>
+  <depend>move_base_msgs</depend>
+  <depend>waypoint_manager_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf</depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 </package>

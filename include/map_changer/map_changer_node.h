@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 #include <yaml-cpp/yaml.h>
-#include <waypoint_manager_msgs/Waypoint.h>
 #include <move_base_msgs/MoveBaseActionResult.h>
+#include <waypoint_manager_msgs/Waypoint.h>
 #include <std_srvs/Trigger.h>
 #include <nav_msgs/LoadMap.h>
 #include <geometry_msgs/Pose.h>
@@ -21,8 +21,8 @@ class map_changer_node
 public:
     map_changer_node();
     ~map_changer_node();
-    void cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &msg);
     void cb_result(const move_base_msgs::MoveBaseActionResult::ConstPtr &msg);
+    void cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &msg);
     void call_next_wp();
     void read_yaml();
     void send_map(int);
@@ -31,8 +31,8 @@ public:
 private:
     ros::NodeHandle nh_;
     ros::NodeHandle pnh_;
-    ros::Subscriber wp_sub_;
     ros::Subscriber result_sub_;
+    ros::Subscriber wp_sub_;
     ros::ServiceClient next_wp_srv_;
     ros::ServiceClient map_srv_;
     ros::ServiceClient costmap_srv_;
@@ -41,6 +41,7 @@ private:
     std::vector<std::array<std::string, 2>> config_list_;
     bool reach_flag_ = false;
     double wait_time_;
+    waypoint_manager_msgs::Waypoint::ConstPtr wp;
 };
 
 }
