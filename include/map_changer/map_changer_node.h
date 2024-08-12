@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <yaml-cpp/yaml.h>
+#include <algorithm>
 #include <move_base_msgs/MoveBaseActionResult.h>
 #include <waypoint_manager_msgs/Waypoint.h>
 #include <std_srvs/Trigger.h>

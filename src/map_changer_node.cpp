@@ -21,30 +21,27 @@ map_changer_node::~map_changer_node()
 
 void map_changer_node::cb_result(const move_base_msgs::MoveBaseActionResult::ConstPtr &msg)
 {
+    static int index = 0;
+    static std::string old_id;
+    static bool tp_flag = false;
     // check availability
     if (!wp)
     {
         return;
     }
-    static int index = 0;
-    static std::string old_id;
-    static bool tp_flag = false;
     // status:3 -> reach goal
-    if (msg->status.status == 3)
+    if (msg->status.status == 3 && !tp_flag)
     {
-        try
+        for (auto itr = config_list_.begin(); itr != config_list_.end(); ++itr)
         {
-            std::string id = config_list_[index][0];
-            if (wp->identity == id && wp->identity == old_id)
+            std::array<std::string, 2>& config = *itr;
+            if (config[0] == wp->identity && config[0] == old_id)
             {
                 ros::Duration(wait_time_).sleep();
                 call_next_wp();
                 tp_flag = true;
+                index = std::distance(config_list_.begin(), itr);
             }
-        }
-        catch(const std::exception& e)
-        {
-            index = 0;
         }
     }else if (tp_flag)
     {
@@ -52,7 +49,6 @@ void map_changer_node::cb_result(const move_base_msgs::MoveBaseActionResult::Con
         send_map(index);
         send_initialpose(wp->pose);
         tp_flag = false;
-        index++;
     }
     old_id = wp->identity;
 }
