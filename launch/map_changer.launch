@@ -1,6 +1,6 @@
 <launch>
 <arg name="file_path"   default="$(find map_changer)/config/test1.yaml"/>
-<arg name="wait_time"   default="1.0"/>
+<arg name="wait_time"   default="0.0"/>
 
 <node pkg="map_changer" type="map_changer_node" name="map_changer_node" output="screen">
     <param name="file_path" value="$(arg file_path)"/>

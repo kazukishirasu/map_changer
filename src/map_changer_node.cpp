@@ -7,8 +7,8 @@ map_changer_node::map_changer_node() : pnh_("~")
     ROS_INFO("Start map_changer_node");
     pnh_.param("wait_time", wait_time_, 1.0);
     read_yaml();
-    result_sub_ = nh_.subscribe("/move_base/result", 1, &map_changer_node::cb_result, this);
     wp_sub_ = nh_.subscribe("/waypoint_manager/waypoint", 1, &map_changer_node::cb_wp, this);
+    result_sub_ = nh_.subscribe("/move_base/result", 1, &map_changer_node::cb_result, this);
     next_wp_srv_ = nh_.serviceClient<std_srvs::Trigger>("/waypoint_manager/waypoint_server/next_waypoint");
     map_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map");
     costmap_srv_ = nh_.serviceClient<nav_msgs::LoadMap>("/change_map_for_costmap");
@@ -19,60 +19,59 @@ map_changer_node::~map_changer_node()
 {
 }
 
+void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &msg)
+{
+    wp_ = msg;
+    static waypoint_manager_msgs::Waypoint old_wp;
+    if (*msg != old_wp)
+    {
+        new_goal_ = true;
+    }else
+    {
+        new_goal_ = false;
+    }
+    old_wp = *msg;
+}
+
 void map_changer_node::cb_result(const move_base_msgs::MoveBaseActionResult::ConstPtr &msg)
 {
-    static int index = 0;
-    static std::string old_id;
-    static bool tp_flag = false;
-    // check availability
-    if (!wp)
+    if (!wp_)
     {
         return;
     }
-    // status:3 -> reach goal
-    if (msg->status.status == 3 && !tp_flag)
+
+    static std::string old_id;
+    if (msg->status.status == 3)
     {
         for (auto itr = config_list_.begin(); itr != config_list_.end(); ++itr)
         {
             std::array<std::string, 2>& config = *itr;
-            if (config[0] == wp->identity && config[0] == old_id)
+            if (config[0] == wp_->identity && config[0] == old_id)
             {
-                ros::Duration(wait_time_).sleep();
+                // ros::Duration(wait_time_).sleep();
                 call_next_wp();
-                tp_flag = true;
-                index = std::distance(config_list_.begin(), itr);
+                reach_goal_ = true;
+                index_ = std::distance(config_list_.begin(), itr);
             }
         }
-    }else if (tp_flag)
-    {
-        send_emclpose(wp->pose);
-        send_map(index);
-        send_initialpose(wp->pose);
-        tp_flag = false;
     }
-    old_id = wp->identity;
+    old_id = wp_->identity;
 }
 
-void map_changer_node::cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &msg)
+void map_changer_node::loop()
 {
-    wp = msg;
-}
+    if (!wp_)
+    {
+        return;
+    }
 
-void map_changer_node::call_next_wp()
-{
-    std_srvs::Trigger srv;
-    try
+    if (reach_goal_ && new_goal_)
     {
-        next_wp_srv_.call(srv);
-        ROS_INFO("Call service : /next_waypoint");
-    }
-    catch(const ros::Exception& e)
-    {
-        ROS_ERROR("%s", e.what());
-    }
-    catch(const std::exception& e)
-    {
-        ROS_ERROR("%s", e.what());
+        send_emclpose(wp_->pose);
+        send_map(index_);
+        send_initialpose(wp_->pose);
+        reach_goal_ = false;
+        new_goal_ = false;
     }
 }
 
@@ -89,7 +88,25 @@ void map_changer_node::read_yaml()
             tmp[0] = node["waypoint_id"].as<std::string>();
             tmp[1] = node["map_file"].as<std::string>();
             config_list_.push_back(tmp);
-        }   
+        }
+    }
+    catch(const std::exception& e)
+    {
+        ROS_ERROR("%s", e.what());
+    }
+}
+
+void map_changer_node::call_next_wp()
+{
+    std_srvs::Trigger srv;
+    try
+    {
+        next_wp_srv_.call(srv);
+        ROS_INFO("Call service : /next_waypoint");
+    }
+    catch(const ros::Exception& e)
+    {
+        ROS_ERROR("%s", e.what());
     }
     catch(const std::exception& e)
     {
@@ -135,8 +152,8 @@ void map_changer_node::send_emclpose(geometry_msgs::Pose pose)
 {
     double roll = 0, pitch = 0, yaw = 0;
     tf::Quaternion quat;
-	quaternionMsgToTF(pose.orientation, quat);
-	tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
+    quaternionMsgToTF(pose.orientation, quat);
+    tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
     nh_.setParam("/emcl2_node/initial_pose_x", pose.position.x);
     nh_.setParam("/emcl2_node/initial_pose_y", pose.position.y);
     nh_.setParam("/emcl2_node/initial_pose_y", yaw);
@@ -155,6 +172,12 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "map_changer_node");
     map_changer::map_changer_node mc;
-    ros::spin();
+    ros::Rate rate(10);
+    while (ros::ok())
+    {
+        ros::spinOnce();
+        mc.loop();
+        rate.sleep();
+    }
     return 0;
 }

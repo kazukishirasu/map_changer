@@ -7,8 +7,8 @@
 #include <vector>
 #include <yaml-cpp/yaml.h>
 #include <algorithm>
-#include <move_base_msgs/MoveBaseActionResult.h>
 #include <waypoint_manager_msgs/Waypoint.h>
+#include <move_base_msgs/MoveBaseActionResult.h>
 #include <std_srvs/Trigger.h>
 #include <nav_msgs/LoadMap.h>
 #include <geometry_msgs/Pose.h>
@@ -22,27 +22,30 @@ class map_changer_node
 public:
     map_changer_node();
     ~map_changer_node();
-    void cb_result(const move_base_msgs::MoveBaseActionResult::ConstPtr &msg);
     void cb_wp(const waypoint_manager_msgs::Waypoint::ConstPtr &msg);
-    void call_next_wp();
+    void cb_result(const move_base_msgs::MoveBaseActionResult::ConstPtr &msg);
+    void loop();
     void read_yaml();
+    void call_next_wp();
     void send_map(int);
     void send_emclpose(geometry_msgs::Pose);
     void send_initialpose(geometry_msgs::Pose);
 private:
     ros::NodeHandle nh_;
     ros::NodeHandle pnh_;
-    ros::Subscriber result_sub_;
     ros::Subscriber wp_sub_;
+    ros::Subscriber result_sub_;
     ros::ServiceClient next_wp_srv_;
     ros::ServiceClient map_srv_;
     ros::ServiceClient costmap_srv_;
     ros::Publisher pose_pub_;
     std::string file_path_;
     std::vector<std::array<std::string, 2>> config_list_;
-    bool reach_flag_ = false;
+    waypoint_manager_msgs::Waypoint::ConstPtr wp_;
+    bool new_goal_ = false;
+    bool reach_goal_ = false;
+    int index_;
     double wait_time_;
-    waypoint_manager_msgs::Waypoint::ConstPtr wp;
 };
 
 }
