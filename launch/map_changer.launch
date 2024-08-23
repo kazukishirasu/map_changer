@@ -1,6 +1,6 @@
 <launch>
 <arg name="file_path"   default="$(find map_changer)/config/test1.yaml"/>
-<arg name="wait_time"   default="10.0"/> <!-- waypointに到達してから何秒間待機するか -->
+<arg name="wait_time"   default="10.0"/>
 
 <node pkg="map_changer" type="map_changer_node" name="map_changer_node" output="screen">
     <param name="file_path" value="$(arg file_path)"/>
