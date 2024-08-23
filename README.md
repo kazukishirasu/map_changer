@@ -1,5 +1,5 @@
 # map_changer  
-Change map with waypoint  
+Change map with [waypoint](https://github.com/open-rdc/waypoint_manager)  
 ## Install  
 ```bash
 git clone https://github.com/kazukishirasu/map_changer.git
