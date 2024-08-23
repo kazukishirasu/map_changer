@@ -5,7 +5,7 @@ namespace map_changer {
 map_changer_node::map_changer_node() : pnh_("~")
 {
     ROS_INFO("Start map_changer_node");
-    pnh_.param("wait_time", wait_time_, 1.0);
+    pnh_.param("wait_time", wait_time_, 10.0);
     read_yaml();
     wp_sub_ = nh_.subscribe("/waypoint_manager/waypoint", 1, &map_changer_node::cb_wp, this);
     result_sub_ = nh_.subscribe("/move_base/result", 1, &map_changer_node::cb_result, this);
@@ -48,7 +48,8 @@ void map_changer_node::cb_result(const move_base_msgs::MoveBaseActionResult::Con
             std::array<std::string, 2>& config = *itr;
             if (config[0] == wp_->identity && config[0] == old_id)
             {
-                // ros::Duration(wait_time_).sleep();
+                ROS_INFO("Waiting for %.1f second", wait_time_);
+                ros::Duration(wait_time_).sleep();
                 call_next_wp();
                 reach_goal_ = true;
                 index_ = std::distance(config_list_.begin(), itr);
