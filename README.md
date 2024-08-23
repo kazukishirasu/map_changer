@@ -1,13 +1,18 @@
-# map_changer
-Change map with waypoint
-## Install
+# map_changer  
+Change map with waypoint  
+## Install  
 ```bash
 git clone https://github.com/kazukishirasu/map_changer.git
 catkin build map_changer
 source ~/.bashrc
 ```
-## Usage
-configuration file:[map_changer/config/test1.yaml](https://github.com/kazukishirasu/map_changer/blob/master/config/test1.yaml)
+## Usage  
+#### waypoint placement  
+Place a waypoint at the robot's position after the map change, like waypoint number 2.  
+<img width="500" alt="" src="https://github.com/kazukishirasu/map_changer/blob/master/img/before_change_map.png">
+<img width="500" alt="" src="https://github.com/kazukishirasu/map_changer/blob/master/img/after_change_map.png">  
+  
+#### configuration file:[map_changer/config/test1.yaml](https://github.com/kazukishirasu/map_changer/blob/master/config/test1.yaml)  
 ```yaml
 config:
     # Specify the waypoint_id when you want to change the map
@@ -17,7 +22,8 @@ config:
   - waypoint_id: registed_0_1609011000000
     map_file: /home/kazuki/tsukuba_ws/src/orne-box/orne_box_navigation_executor/maps/mymap1
 ```
-launch file:[map_changer/launch/map_changer.launch](https://github.com/kazukishirasu/map_changer/blob/master/launch/map_changer.launch)
+  
+#### launch file:[map_changer/launch/map_changer.launch](https://github.com/kazukishirasu/map_changer/blob/master/launch/map_changer.launch)  
 ```xml
 <launch>
 <!-- Set configuration file -->
@@ -31,7 +37,8 @@ launch file:[map_changer/launch/map_changer.launch](https://github.com/kazukishi
 </node>
 </launch>
 ```
-launch
+  
+#### launch  
 ```bash
 roslaunch map_changer map_changer.launch
 ```
